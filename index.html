@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctery — Video Consultations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<section id="login-screen" class="login">
+  <div class="login__brand">
+    <span class="login__mark">Doctery Connect</span>
+    <h1 class="login__headline">See a doctor<br>without leaving the room.</h1>
+    <p class="login__sub">Book a slot, join a live video consultation, and message your doctor — all in one place.</p>
+    <ul class="login__points">
+      <li>Verified doctors across 12 specialties</li>
+      <li>Video + chat in the same session</li>
+      <li>Consultation notes saved for later</li>
+    </ul>
+  </div>
+
+  <div class="login__form-wrap">
+    <form id="login-form" class="login__form">
+      <h2>Sign in to continue</h2>
+
+      <div class="role-toggle" role="radiogroup" aria-label="Choose role">
+        <button type="button" class="role-toggle__btn is-active" data-role="patient" role="radio" aria-checked="true">Patient</button>
+        <button type="button" class="role-toggle__btn" data-role="doctor" role="radio" aria-checked="false">Doctor</button>
+      </div>
+
+      <label class="field">
+        <span>Full name</span>
+        <input type="text" id="name-input" placeholder="e.g. Priya Sharma" required>
+      </label>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" id="email-input" placeholder="you@example.com" required>
+      </label>
+
+      <button type="submit" class="btn btn--primary btn--block">Enter consultation room</button>
+      <p class="login__note">Demo login — no password needed. This creates a local session only.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ========== APP SHELL (hidden until login) ========== -->
+<div id="app" class="app hidden">
+
+  <aside class="sidebar">
+    <div class="sidebar__brand">Arogya Connect</div>
+    <nav class="sidebar__nav">
+      <button class="sidebar__link is-active" data-view="dashboard">Dashboard</button>
+      <button class="sidebar__link" data-view="appointments">Appointments</button>
+      <button class="sidebar__link" data-view="call" id="nav-call" disabled>Consultation</button>
+    </nav>
+    <div class="sidebar__user">
+      <div class="avatar" id="user-avatar">?</div>
+      <div>
+        <div class="sidebar__user-name" id="user-name">—</div>
+        <div class="sidebar__user-role" id="user-role">—</div>
+      </div>
+    </div>
+    <button class="sidebar__logout" id="logout-btn">Sign out</button>
+  </aside>
+
+  <main class="main">
+
+    <!-- ---- DASHBOARD VIEW ---- -->
+    <section id="view-dashboard" class="view">
+      <header class="view__header">
+        <h1>Your care, on your time.</h1>
+        <p>Pick a doctor and an open slot to start a video consultation.</p>
+      </header>
+
+      <div class="doctor-list" id="doctor-list"><!-- injected by JS --></div>
+    </section>
+
+    <!-- ---- APPOINTMENTS VIEW ---- -->
+    <section id="view-appointments" class="view hidden">
+      <header class="view__header">
+        <h1>Appointments</h1>
+        <p>Everything you've booked, in one list.</p>
+      </header>
+      <div class="appointment-list" id="appointment-list">
+        <p class="empty-state">No appointments booked yet. Go to Dashboard to book one.</p>
+      </div>
+    </section>
+
+    <!-- ---- CALL VIEW ---- -->
+    <section id="view-call" class="view hidden">
+      <div class="call">
+        <div class="call__top">
+          <div class="call__with">
+            <span class="call__dot"></span>
+            <span id="call-with-name">Dr. —</span>
+          </div>
+          <div class="call__timer" id="call-timer">00:00</div>
+        </div>
+
+        <div class="call__stage">
+          <div class="call__remote">
+            <div class="call__remote-placeholder" id="remote-placeholder">
+              <div class="pulse-ring"></div>
+              <span id="remote-status-text">Connecting…</span>
+            </div>
+            <span class="call__label call__label--remote" id="remote-label">Dr. —</span>
+          </div>
+          <div class="call__local">
+            <video id="local-video" autoplay muted playsinline></video>
+            <span class="call__label">You</span>
+          </div>
+        </div>
+
+        <div class="call__controls">
+          <button class="ctrl-btn" id="toggle-mic" title="Mute / unmute">🎤</button>
+          <button class="ctrl-btn" id="toggle-cam" title="Camera on / off">📷</button>
+          <button class="ctrl-btn ctrl-btn--end" id="end-call" title="End call">✕ End</button>
+        </div>
+      </div>
+
+      <aside class="chat">
+        <div class="chat__header">Chat</div>
+        <div class="chat__messages" id="chat-messages"></div>
+        <div class="chat__typing hidden" id="typing-indicator">Doctor is typing…</div>
+        <form class="chat__input-row" id="chat-form">
+          <input type="text" id="chat-input" placeholder="Type a message…" autocomplete="off">
+          <button type="submit" class="btn btn--accent">Send</button>
+        </form>
+      </aside>
+    </section>
+
+  </main>
+</div>
+
+<!-- ---- BOOKING MODAL ---- -->
+<div id="booking-modal" class="modal hidden">
+  <div class="modal__box">
+    <button class="modal__close" id="modal-close">✕</button>
+    <h2 id="modal-doctor-name">Book with Dr. —</h2>
+    <p class="modal__sub" id="modal-doctor-spec">Specialty</p>
+
+    <p class="modal__label">Choose a slot</p>
+    <div class="slot-grid" id="slot-grid"></div>
+
+    <button class="btn btn--primary btn--block" id="confirm-booking" disabled>Confirm booking</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
